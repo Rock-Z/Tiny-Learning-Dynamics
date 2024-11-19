@@ -5,7 +5,10 @@ def main():
     # Load the tokenizer and model
     model_name = "gpt2"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForCausalLM.from_pretrained("./results")
+
+    # Give "subfolder" as an argument to load the model from a specific checkpoint
+    # Models are saved every 500 steps, so the checkpoint-500 is the first checkpoint
+    model = AutoModelForCausalLM.from_pretrained("rock-z/tiny_gpt2_tiny_stories", subfolder="checkpoint-500")
 
     # Set the model to evaluation mode
     model.eval()
