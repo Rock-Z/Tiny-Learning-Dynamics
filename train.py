@@ -47,7 +47,7 @@ def main():
         eval_steps=500,
         learning_rate=6e-4,
         lr_scheduler_type="cosine",
-        warmup_steps=500,
+        warmup_steps=1000,
         per_device_train_batch_size=128,
         per_device_eval_batch_size=128,
         num_train_epochs=3,
@@ -75,7 +75,7 @@ def main():
     )
 
     # Train the model
-    trainer.train()
+    trainer.train(resume_from_checkpoint=True)
 
 if __name__ == "__main__":
     main()
