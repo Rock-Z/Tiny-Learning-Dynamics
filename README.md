@@ -12,3 +12,11 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 # run!
 uv run train.py
 ```
+
+# Info
+
+The files in this repo are:
+- `train.py`: the main training script
+- `eval.py`: script for evaluation on blimp
+- `prompt_gen.ipynb`: notebook for generating prompts for augmenting tinystories
+- `run_generation.py: autoregressive generation script 
