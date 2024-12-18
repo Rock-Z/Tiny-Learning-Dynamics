@@ -8,7 +8,10 @@ def main():
 
     # Give "subfolder" as an argument to load the model from a specific checkpoint
     # Models are saved every 500 steps, so the checkpoint-500 is the first checkpoint
-    model = AutoModelForCausalLM.from_pretrained("rock-z/tiny_gpt2_tiny_stories", subfolder="checkpoint-500")
+    model = AutoModelForCausalLM.from_pretrained(
+        "rock-z/tiny_gpt2_more_stories_241206", 
+        #subfolder="checkpoint-500",
+        )
 
     # Set the model to evaluation mode
     model.eval()

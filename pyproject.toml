@@ -10,4 +10,5 @@ dependencies = [
     "matplotlib>=3.9.2",
     "torch>=2.5.1",
     "transformers>=4.46.3",
+    "wandb>=0.19.1",
 ]

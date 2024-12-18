@@ -15,7 +15,7 @@ def count_trainable_parameters(model):
 def main():
 
     # Load the TinyStories dataset
-    dataset = load_dataset("roneneldan/TinyStories")
+    dataset = load_dataset("s-ostrove/moreStories")
 
     # Load the tokenizer and model
     model_name = "gpt2"  # Using GPT-2 as a small model example
@@ -32,7 +32,7 @@ def main():
 
     # Tokenize the dataset
     def tokenize_function(examples):
-        return tokenizer(examples["text"], padding="max_length", truncation=True, max_length=512)
+        return tokenizer(examples["text"], padding="longest", truncation=True, max_length=512)
 
     tokenized_datasets = dataset.map(tokenize_function, batched=True)
     data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
@@ -42,7 +42,7 @@ def main():
 
     # Define training arguments
     training_args = TrainingArguments(
-        output_dir="./results",
+        output_dir="./results_10x_more_stories",
         eval_strategy="steps",
         eval_steps=500,
         learning_rate=6e-4,
@@ -56,7 +56,7 @@ def main():
         save_steps=500,
         load_best_model_at_end=True,
         push_to_hub=True,
-        hub_model_id="tiny_gpt2_tiny_stories",
+        hub_model_id="tiny_gpt2_10x_more_stories_241217",
         hub_strategy="all_checkpoints",
     )
 
@@ -69,10 +69,11 @@ def main():
     trainer = Trainer(
         model=model,
         args=training_args,
-        data_collator=data_collator,
         train_dataset=tokenized_datasets["train"],
-        eval_dataset=tokenized_datasets["validation"],
+        eval_dataset=tokenized_datasets["test"],
+        data_collator=data_collator,
     )
+
 
     # Train the model
     trainer.train(resume_from_checkpoint=True)
