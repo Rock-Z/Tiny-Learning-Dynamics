@@ -13,14 +13,13 @@ tokenizer = AutoTokenizer.from_pretrained("gpt2")
 tokenizer.pad_token = tokenizer.eos_token
 
 # Dataset for each task and initialize dicts to track accuracy
-correct_answers = {}
-incorrect_answers = {}
 datasets = {}
 
 for task in tasks:
     datasets[task] = load_dataset("blimp", task)
-    correct_answers[task] = []
-    incorrect_answers[task] = []
+
+datasets['irregular_plural_subject_verb_agreement_1_newer'] =\
+    load_dataset("json", data_files="irregular_plural_subject_verb_agreement_1_newer.jsonl")
 
 def compute_log_probs(sentences, model, tokenizer):
     inputs = tokenizer(sentences, return_tensors="pt", padding=True, truncation=True).to(model.device)
@@ -41,7 +40,9 @@ def compute_log_probs(sentences, model, tokenizer):
 
     return log_probs
 
-def evaluate_blimp(model, tokenizer, dataset, batch_size=128):
+def evaluate_blimp(model, tokenizer, dataset, batch_size=2048):
+    correct_answers = []
+    incorrect_answers = []
     for i in range(0, len(dataset['train']), batch_size):
         batch = dataset['train'][i:min(i+batch_size, len(dataset['train']))]
         batch_ids = range(i, min(i+batch_size, len(dataset['train'])))
@@ -56,28 +57,31 @@ def evaluate_blimp(model, tokenizer, dataset, batch_size=128):
             incorrect_log_prob = incorrect_log_probs[j]
             if correct_log_prob > incorrect_log_prob:
                 entry = {"Example_id": batch_ids[j], "Difference": correct_log_prob - incorrect_log_prob}
-                correct_answers[task_name].append(entry)
+                correct_answers.append(entry)
             else:
                 entry = {
                     "Example_id": batch_ids[j],
                     "Difference": incorrect_log_prob - correct_log_prob,
                 }
-                incorrect_answers[task_name].append(entry)
+                incorrect_answers.append(entry)
 
         # # Sort by difference
-        # correct_answers[task_name].sort(key=lambda x: x["Difference"], reverse=True)
-        # incorrect_answers[task_name].sort(key=lambda x: x["Difference"], reverse=True)
+        # correct_answers.sort(key=lambda x: x["Difference"], reverse=True)
+        # incorrect_answers.sort(key=lambda x: x["Difference"], reverse=True)
+
+    return correct_answers, incorrect_answers
 
 for checkpoint in checkpoints:
     model = AutoModelForCausalLM.from_pretrained("rock-z/tiny_gpt2_more_stories_241206", subfolder=checkpoint)
     model.eval()
     model.to("cuda")
     for task_name, dataset in datasets.items():
-        evaluate_blimp(model, tokenizer, dataset)
+        print(f"Evaluating {task_name} at {checkpoint}")
+        correct_answers, incorrect_answers = evaluate_blimp(model, tokenizer, dataset)
 
     # Write out to jsonl files
     for task_name in datasets.keys():
         with open(f"results_progress/{task_name}_{checkpoint}_correct.jsonl", "w") as f:
-            f.write("\n".join(json.dumps(item) for item in correct_answers[task_name]) + "\n")
+            f.write("\n".join(json.dumps(item) for item in correct_answers) + "\n")
         with open(f"results_progress/{task_name}_{checkpoint}_incorrect.jsonl", "w") as f:
-            f.write("\n".join(json.dumps(item) for item in incorrect_answers[task_name]) + "\n")
+            f.write("\n".join(json.dumps(item) for item in incorrect_answers) + "\n")
