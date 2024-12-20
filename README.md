@@ -23,3 +23,4 @@ The files in this repo are:
 
 # Presentation and Paper
 - Slides: https://docs.google.com/presentation/d/1R2EoC_cgrcWvqnC3ALvir5P4L-fGSY2_z5A-r6O7GZA/edit?usp=sharing
+- Report: https://www.overleaf.com/read/whypskvvwbmh#3c658f
