@@ -19,7 +19,7 @@ The files in this repo are:
 - `train.py`: the main training script
 - `eval.py`: script for evaluation on blimp
 - `prompt_gen.ipynb`: notebook for generating prompts for augmenting tinystories
-- `run_generation.py: autoregressive generation script
+- `run_generation.py`: autoregressive generation script
 
 # Presentation and Paper
 - Slides: https://docs.google.com/presentation/d/1R2EoC_cgrcWvqnC3ALvir5P4L-fGSY2_z5A-r6O7GZA/edit?usp=sharing
